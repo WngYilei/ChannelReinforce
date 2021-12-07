@@ -241,12 +241,7 @@ uploadArchives {
     }
 }
 ```
-
-![image-20211207224421397](/Users/wyl/Library/Application Support/typora-user-images/image-20211207224421397.png)
-
-
-
-点击这个任务，进行插件的发布。
+通过/upload/uploadArchives task 来发布插件
 
 在根目录的gradle中 引入仓库地址和插件
 
@@ -285,17 +280,10 @@ walle {
 ```
 
 
-
-![image-20211207224451755](/Users/wyl/Library/Application Support/typora-user-images/image-20211207224451755.png)
-
-然后执行这个task 来测试一下我们的成果
+然后执行assembleReleaseChannels  task 来测试一下我们的成果
 
 最后在build/outputs 目录下，会生成一个两个文件夹，jiagu 和 channles 。jiagu存放的加固后的apk，channels存放的是多渠道的apk。
 
-
-
 至此，这个方案站在巨人的肩膀上就完成了，感谢美团walle。
-
-代码地址：https://github.com/WngYilei/ChannelReinforce
 
 有问题欢迎留言讨论。
