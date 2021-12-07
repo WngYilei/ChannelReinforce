@@ -1,0 +1,4 @@
+
+rootProject.name = "ChannelReinforce"
+include ':app'
+include ':channel_plugin'
