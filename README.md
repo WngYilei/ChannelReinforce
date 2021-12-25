@@ -1,4 +1,5 @@
 # ChannelReinforce
+
 ## Walle和加固宝的优雅结合
 
 多渠道打包的方案，现在基本上分为Flavors的方案还有美团walle的方案。
@@ -53,7 +54,7 @@ GradlePlugin 是插件执行的入口， Extension 主要是Gradle 的配置信�
 
 方案的实现，主要是通过修改Extension 和  ChannelMaker 来实现。
 
-先来看Extension
+先来看Extension 
 
 ```groovy
 class Extension {
@@ -67,7 +68,7 @@ class Extension {
 }
 ```
 
-这些字段看上去是不是很熟悉，没错，就是在我们在gradle 中 配置walle 的信息
+这些字段看上去是不是很熟悉，没错，就是在我们在gradle 中 配置walle 的信息 
 
 ```groovy
 walle {
@@ -79,7 +80,7 @@ walle {
 }
 ```
 
-我们通过这里，就可以把加固宝的信息配置进去
+我们通过这里，就可以把加固宝的信息配置进去 
 
 ```groovy
 class Extension {
@@ -168,7 +169,7 @@ File appDoc = new File(appFilePath)
 if (!appDoc.exists()) appDoc.mkdir()
 ```
 
-获取签名的方法在GrdlePlugin中 已经给到了，可以直接拿来用
+获取签名的方法在GrdlePlugin中 已经给到了，可以直接拿来用 
 
 ```groovy
 SigningConfig getSigningConfig(BaseVariant variant) {
@@ -240,12 +241,7 @@ uploadArchives {
     }
 }
 ```
-
-![image-20211207224421397](/Users/wyl/Library/Application Support/typora-user-images/image-20211207224421397.png)
-
-
-
-点击这个任务，进行插件的发布。
+通过/upload/uploadArchives task 来发布插件
 
 在根目录的gradle中 引入仓库地址和插件
 
@@ -284,17 +280,10 @@ walle {
 ```
 
 
-
-![image-20211207224451755](/Users/wyl/Library/Application Support/typora-user-images/image-20211207224451755.png)
-
-然后执行这个task 来测试一下我们的成果
+然后执行assembleReleaseChannels  task 来测试一下我们的成果
 
 最后在build/outputs 目录下，会生成一个两个文件夹，jiagu 和 channles 。jiagu存放的加固后的apk，channels存放的是多渠道的apk。
 
-
-
 至此，这个方案站在巨人的肩膀上就完成了，感谢美团walle。
-
-代码地址：https://github.com/WngYilei/ChannelReinforce
 
 有问题欢迎留言讨论。
