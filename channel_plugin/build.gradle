@@ -24,7 +24,7 @@ repositories {
 
 
 group = 'com.xl.channel-plugin'
-version = "1.0.0"
+version = "1.0.2"
 
 //打包上传到本地
 uploadArchives {

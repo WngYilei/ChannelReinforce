@@ -29,9 +29,8 @@ class ChannelMaker extends DefaultTask {
 
     private static final String DOT_APK = ".apk";
 
-    @Input
     public BaseVariant variant;
-    @Input
+
     public Project targetProject;
 
     public void setup() {
@@ -90,8 +89,16 @@ class ChannelMaker extends DefaultTask {
                 }
             }
 
+            String abi = "abi"
+            if (apkFile.name.contains("armeabi-v7a") || apkFile.name.contains("arm64-v8a")) {
+                String[] abiNames = apkFile.name.split("-")
+                if (abiNames != null && abiNames.length > 0)
+                    abi = abiNames[1]+abiNames[2]
+            }
+
             def nameVariantMap = [
                     'appName'    : targetProject.name,
+                    'abiName'    : abi,
                     'projectName': targetProject.rootProject.name,
                     'buildType'  : variant.buildType.name,
                     'versionName': variant.versionName,
@@ -197,150 +204,6 @@ class ChannelMaker extends DefaultTask {
 
         }
 
-
-
-//        def iterator = variant.outputs.iterator()
-//        while (iterator.hasNext()) {
-//            def it = iterator.next();
-//            def apkFile = it.outputFile
-//            def apiIdentifier = null;
-//            if (!it.outputs[0].filters.isEmpty()) {
-//                def tempIterator = it.outputs[0].filters.iterator();
-//                while (tempIterator.hasNext()) {
-//                    FilterData filterData = tempIterator.next();
-//                    if (filterData.filterType == "ABI") {
-//                        apiIdentifier = filterData.identifier
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            if (apkFile == null || !apkFile.exists()) {
-//                throw new GradleException("${apkFile} is not existed!");
-//            }
-//            if (!apkFile.name.contains("jiagu")) continue
-//            checkV2Signature(apkFile)
-//
-//            File channelOutputFolder = apkFile.parentFile;
-//            if (extension.apkOutputFolder instanceof File) {
-//                channelOutputFolder = extension.apkOutputFolder;
-//                if (!channelOutputFolder.parentFile.exists()) {
-//                    channelOutputFolder.parentFile.mkdirs();
-//                }
-//            }
-//            println("apiIdentifier:=======" + apiIdentifier)
-//            if (apiIdentifier != null && apiIdentifier.length() > 0) {
-//                channelOutputFolder = new File(channelOutputFolder, apiIdentifier);
-//                if (!channelOutputFolder.parentFile.exists()) {
-//                    println("apiIdentifier2:=======" + apiIdentifier)
-//                    channelOutputFolder.parentFile.mkdirs();
-//                }
-//            }
-//            def nameVariantMap = [
-//                    'appName'    : targetProject.name,
-//                    'projectName': targetProject.rootProject.name,
-//                    'buildType'  : variant.buildType.name,
-//                    'versionName': variant.versionName,
-//                    'versionCode': variant.versionCode,
-//                    'packageName': variant.applicationId,
-//                    'flavorName' : variant.flavorName
-//            ]
-//
-//            if (targetProject.hasProperty(PROPERTY_CHANNEL_LIST)) {
-//
-//                def channelList = new ArrayList<String>()
-//                def channelListProperty = targetProject.getProperties().get(PROPERTY_CHANNEL_LIST)
-//                if (channelListProperty != null && channelListProperty.trim().length() > 0) {
-//                    channelList.addAll(channelListProperty.split(",").collect { it.trim() })
-//                }
-//                def extraInfo = null;
-//                def extraInfoString = targetProject.getProperties().get(PROPERTY_EXTRA_INFO)
-//                if (extraInfoString != null && extraInfoString.trim().length() > 0) {
-//                    def keyValues = extraInfoString.split(",").collect {
-//                        it.trim()
-//                    }
-//                    extraInfo = keyValues.findAll {
-//                        it.split(":").size() == 2
-//                    }.collectEntries([:]) { keyValue ->
-//                        def data = keyValue.split(":")
-//                        [data[0], data[1]]
-//                    }
-//                }
-//                channelList.each { channel ->
-//                    generateChannelApk(apkFile, channelOutputFolder, nameVariantMap, channel, extraInfo, null)
-//                }
-//
-//            } else if (targetProject.hasProperty(PROPERTY_CONFIG_FILE)) {
-//
-//                def configFile = new File(targetProject.getProperties().get(PROPERTY_CONFIG_FILE))
-//
-//                if (!configFile.exists()) {
-//                    project.logger.warn("config file does not exist")
-//                    return
-//                }
-//
-//                generateChannelApkByConfigFile(configFile, apkFile, channelOutputFolder, nameVariantMap)
-//
-//            } else if (targetProject.hasProperty(PROPERTY_CHANNEL_FILE)) {
-//
-//                def channelFile = new File(targetProject.getProperties().get(PROPERTY_CHANNEL_FILE))
-//
-//                if (!channelFile.exists()) {
-//                    project.logger.warn("channel file does not exist")
-//                    return
-//                }
-//
-//                generateChannelApkByChannelFile(channelFile, apkFile, channelOutputFolder, nameVariantMap)
-//
-//            } else if (extension.configFile instanceof File) {
-//
-//                if (!extension.configFile.exists()) {
-//                    project.logger.warn("config file does not exist")
-//                    return
-//                }
-//
-//                generateChannelApkByConfigFile(extension.configFile, apkFile, channelOutputFolder, nameVariantMap)
-//
-//            } else if (extension.channelFile instanceof File) {
-//
-//                if (!extension.channelFile.exists()) {
-//                    project.logger.warn("channel file does not exist")
-//                    return
-//                }
-//
-//                generateChannelApkByChannelFile(extension.channelFile, apkFile, channelOutputFolder, nameVariantMap)
-//            } else if (extension.variantConfigFileName != null && extension.variantConfigFileName.length() > 0) {
-//                List<File> locations = new ArrayList<>()
-//                locations.add(new File(project.projectDir, "src" + File.separator + variant.name))
-//                locations.add(new File(project.projectDir, "src" + File.separator + variant.flavorName))
-//                locations.add(new File(project.projectDir, "src" + File.separator + variant.buildType.name))
-//                locations.add(new File(project.projectDir, "src" + File.separator + "main"))
-//
-//
-//                boolean isFindConfigFile = false
-//                locations.each { file ->
-//                    if (isFindConfigFile) {
-//                        return true
-//                    }
-//                    if (file.exists()) {
-//                        File configFile = new File(file, extension.variantConfigFileName)
-//                        if (configFile.exists()) {
-//                            generateChannelApkByConfigFile(configFile, apkFile, channelOutputFolder, nameVariantMap)
-//                            isFindConfigFile = true
-//                            project.logger.error("[Walle] Using config file : " + configFile)
-//                        }
-//                    }
-//                }
-//                if (!isFindConfigFile) {
-//                    project.logger.error("[Walle] config file does not exist")
-//                    project.logger.error("[Walle] please put the file in the follow locations [Descending order of priority]")
-//                    locations.each { file ->
-//                        project.logger.error("[Walle]   " + file.absolutePath)
-//                    }
-//
-//                }
-//            }
-//        }
 
         targetProject.logger.lifecycle("APK Signature Scheme v2 Channel Maker takes about " + (
                 System.currentTimeMillis() - startTime) + " milliseconds");
