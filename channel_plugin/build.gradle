@@ -22,20 +22,49 @@ repositories {
     mavenCentral()
 }
 
-
-group = 'com.xl.channel-plugin'
-version = "1.0.2"
-
-//打包上传到本地
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs '../repo/'
-        }
-    }
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
+
+
+
+//group = 'com.xl.channel-plugin'
+//version = "1.0.3"
+//
+////打包上传到本地
+//uploadArchives {
+//    repositories {
+//        flatDir {
+//            dirs '../repo/'
+//        }
+//    }
+//}
+
+
+def RELEASE_REPOSITORY_URL = 'http://47.97.251.64:8081/repository/maven-releases/'
+def GROUP = 'com.xl'
+def NEXUS_USERNAME = 'admin'
+def NEXUS_PASSWORD = 'xiaolei521'
+def NEXUS_DESC = 'channel-plugin'
+def NEXUS_VERSION  ="1.0.4"
+
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                pom.groupId = GROUP
+                pom.artifactId = NEXUS_DESC
+                pom.version = NEXUS_VERSION
+                repository(url: RELEASE_REPOSITORY_URL) {
+                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+                }
+            }
+        }
+    }
+}
+
+
+
+

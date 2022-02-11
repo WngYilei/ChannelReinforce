@@ -36,7 +36,6 @@ android {
     }
 
 
-
     signingConfigs {
         release {
             storeFile file('/Users/wyl/Documents/android.keystore')
@@ -90,9 +89,11 @@ walle {
     // 渠道配置文件
     channelFile = new File("${project.getProjectDir()}/channel")
 
-    jiaguPath ="/Users/wyl/Downloads/360jiagubao_mac/jiagu/jiagu.jar"
+    jiaguPath = "/Users/wyl/Downloads/360jiagubao_mac/jiagu/jiagu.jar"
 
-    jiaguUser ="18222240810"
+    jiaguUser = "18222240810"
 
-    jiaguPwd  ="xiaolei521"
+    jiaguPwd = "xiaolei521"
+
+    isFlutter = false
 }
