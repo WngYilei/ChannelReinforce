@@ -1,6 +1,6 @@
 package com.xl.channel_plugin
 
-
+import com.android.builder.model.SigningConfig
 import org.gradle.api.Project
 
 class Extension {

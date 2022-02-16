@@ -1,6 +1,6 @@
 package com.xl.channel_plugin
 
-
+import com.android.build.FilterData
 import com.android.build.gradle.api.BaseVariant
 import com.android.builder.model.SigningConfig
 import com.google.common.base.Charsets
@@ -12,18 +12,19 @@ import com.google.gson.Gson
 import com.xl.channel_plugin.android.apksigner.core.ApkVerifier
 import com.xl.channel_plugin.android.apksigner.core.internal.util.ByteBufferDataSource
 import com.xl.channel_plugin.android.apksigner.core.util.DataSource
-import com.xl.channel_plugin.writer.ChannelWriter
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-
+import com.xl.channel_plugin.writer.ChannelWriter
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.text.SimpleDateFormat
+import java.util.concurrent.locks.ReentrantLock
 
 class ChannelMaker extends DefaultTask {
 
@@ -51,10 +52,9 @@ class ChannelMaker extends DefaultTask {
 
         def appFilePath = project.getProjectDir().absolutePath + "/build/outputs/jiagu"
         if (extension.isFlutter) {
-            String path = project.getProjectDir().parent.split("android")[0]
+            String path = project.getProjectDir().parent.split(project.parent.name)[0]
             appFilePath = path + "/build/app/outputs/jiagu"
         }
-
         File appDoc = new File(appFilePath)
         if (!appDoc.exists()) appDoc.mkdir()
 
@@ -69,19 +69,20 @@ class ChannelMaker extends DefaultTask {
             }
 
             if (extension.isFlutter) {
-                String path = project.getProjectDir().parent.split("android")[0]
+                String path = project.getProjectDir().parent.split(project.parent.name)[0]
                 String apkPath = path + "build/app/outputs/apk/${variant.name.toLowerCase()}"
+
                 File[] files = new File(apkPath).listFiles()
                 if (files == null || files.size() == 0) return
 
                 files.each {
                     if (it.name.endsWith(".apk")) {
-                        File oldApk = new File(appFilePath+"/oldApk.apk")
-                        com.android.utils.FileUtils.copyFile(it,oldApk)
-                        project.exec {
-                            it.commandLine("java", "-jar", extension.jiaguPath, "-jiagu", oldApk, appFilePath, "-autosign")
-                        }
-                        oldApk.delete()
+                        File oldApk = new File(appFilePath + "/oldApk.apk")
+                        com.android.utils.FileUtils.copyFile(it, oldApk)
+//                        project.exec {
+//                            it.commandLine("java", "-jar", extension.jiaguPath, "-jiagu", oldApk, appFilePath, "-autosign")
+//                        }
+//                        oldApk.delete()
                     }
                 }
             } else {
@@ -89,12 +90,13 @@ class ChannelMaker extends DefaultTask {
                 while (iterator.hasNext()) {
                     def it = iterator.next();
                     def apkFile = it.outputFile
-                    project.exec {
-                        it.commandLine("java", "-jar", extension.jiaguPath, "-jiagu", apkFile, appFilePath, "-autosign")
-                    }
+                    File oldApk = new File(appFilePath + "/oldApk.apk")
+                    com.android.utils.FileUtils.copyFile(apkFile, oldApk)
+//                    project.exec {
+//                        it.commandLine("java", "-jar", extension.jiaguPath, "-jiagu", apkFile, appFilePath, "-autosign")
+//                    }
                 }
             }
-
         }
 
         File[] files = appDoc.listFiles()

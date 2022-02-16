@@ -67,11 +67,16 @@ class GradlePlugin implements Plugin<Project> {
                 channelMaker.variant = variant;
                 channelMaker.setup();
 
-                if (variant.hasProperty('assembleProvider')) {
-                    channelMaker.dependsOn variant.assembleProvider.get()
-                } else {
-                    channelMaker.dependsOn variant.assemble
-                }
+
+                channelMaker.dependsOn("package$variantName")
+                project.tasks.getByName("assemble$variantName").dependsOn(channelMaker)
+
+//                if (variant.hasProperty('assembleProvider')) {
+//                    channelMaker.dependsOn variant.assembleProvider.get()
+//                } else {
+//                    channelMaker.dependsOn variant.assemble
+//                }
+
             }
         }
     }
